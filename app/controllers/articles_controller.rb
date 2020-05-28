@@ -22,7 +22,7 @@ class ArticlesController < ApplicationController
         @article.destroy
         flash.notice = "Article '#{@article.title}' Destroyed!"
         redirect_to articles_path(@article)
-      end
+    end
 
     def edit
         @article = Article.find(params[:id])
@@ -34,12 +34,21 @@ class ArticlesController < ApplicationController
         flash.notice = "Article '#{@article.title}' Updated!"
       
         redirect_to article_path(@article)
-      end
+    end
+    before_filter :authenticated, only: [:new, :create, :edit, :update, :destroy]
+
+    def authenticated
+        unless Author.count == 0 || current_user
+          redirect_to root_path
+          return false
+        end
+    end
     private
     
-        def article_params
-            params.require(:article).permit(:title, :body, :image)
-        end
+    def article_params
+        params.require(:article).permit(:title, :body, :image)
+    end
+
             
            
 end
